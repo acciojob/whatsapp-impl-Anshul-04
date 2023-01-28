@@ -30,9 +30,11 @@ public class WhatsappRepository {
 
 
     public String createUser(String name, String mobile) throws Exception {
+        //if user already exist throws an exception
         if(userMobile.contains(mobile)){
             throw new Exception("User already exists");
         }
+        //otherwise add new user
         User user=new User(name,mobile);
         userMobile.add(user.getMobile());
         return "SUCCESS";
@@ -40,6 +42,7 @@ public class WhatsappRepository {
 
     public Group createGroup(List<User> users){
         if(users.size()>2){
+            //if no of users in grp is greater than 2,then grp name should be grp count
             customGroupCount++;
             Group group = new Group("Group "+customGroupCount, users.size());
             groupUserMap.put(group, users);
@@ -61,10 +64,12 @@ public class WhatsappRepository {
         return messageId;
     }
     public int sendMessage(Message message, User sender, Group group) throws Exception{
+        //if grp doesn't exist it throws exception
         if(!groupUserMap.containsKey(group))
         {
             throw new Exception("Group does not exist");
         }
+        //if sender is not in grp it throws exception
         if(!groupUserMap.get(group).contains(sender))
         {
             throw new Exception("You are not allowed to send message");
@@ -73,21 +78,25 @@ public class WhatsappRepository {
         List<Message>ml=groupMessageMap.get(group);
         ml.add(message);
         groupMessageMap.put(group,ml);
-        return ml.size();
+        return ml.size();  //sending final no of msg in grp
     }
     public String changeAdmin(User approver, User user, Group group) throws Exception{
+        // //if grp doesn't exist it throws exception
         if(!groupUserMap.containsKey(group))
         {
             throw new Exception("Group does not exist");
         }
+        //If the approver is not the current admin of the group, the application will throw an exception.
         if(!approver.equals(adminMap.get(group)))
         {
             throw new Exception("Approver does not have rights");
         }
+        //if user is not part of the grp
         if(!groupUserMap.get(group).contains(user))
         {
             throw new Exception("User is not a participant");
         }
+        //new admin
         adminMap.put(group,user);
 
         return "SUCCESS";
